@@ -12,6 +12,18 @@
         <my-ad style="margin-top: 16px" />
       </div>
     </a-row>
+    <!-- 胜利弹窗 -->
+    <a-modal
+      v-model:open="victoryModalVisible"
+      title="关卡完成！"
+      @ok="handleVictoryOk"
+      @cancel="handleVictoryCancel"
+      okText="下一关"
+      cancelText="返回关卡列表"
+    >
+      <p>恭喜你完成了当前关卡！</p>
+      <p>是否进入下一关？</p>
+    </a-modal>
     <!-- 分层选块 -->
     <a-row align="center">
       <div v-show="gameStatus > 0" class="level-board">
@@ -84,7 +96,7 @@
 
 <script setup lang="ts">
 import useGame from "../core/game";
-import { onMounted } from "vue";
+import { onMounted, watch, ref } from "vue";
 import { useRouter } from "vue-router";
 import MyAd from "../components/MyAd.vue";
 
@@ -111,12 +123,47 @@ const {
   doSeeRandom,
 } = useGame();
 
+// 胜利弹窗
+const victoryModalVisible = ref(false);
+
 /**
  * 回上一页
  */
 const doBack = () => {
   router.back();
 };
+
+/**
+ * 处理胜利弹窗确认
+ */
+const handleVictoryOk = () => {
+  const currentLevel = localStorage.getItem('currentLevel');
+  if (currentLevel) {
+    const levelId = parseInt(currentLevel);
+    const nextLevel = levelId + 1;
+    // 跳转到下一关
+    router.push(`/game?level=${nextLevel}`);
+  }
+};
+
+/**
+ * 处理胜利弹窗取消
+ */
+const handleVictoryCancel = () => {
+  // 返回关卡列表
+  router.push('/levels');
+};
+
+// 监听游戏状态变化
+watch(
+  () => gameStatus.value,
+  (newStatus) => {
+    if (newStatus === 3) {
+      // 游戏胜利，显示弹窗
+      victoryModalVisible.value = true;
+    }
+  }
+);
 
 onMounted(() => {
   doStart();

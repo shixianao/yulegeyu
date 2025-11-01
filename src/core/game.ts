@@ -7,9 +7,44 @@ import { useGlobalStore } from "./globalStore";
 // @ts-ignore
 import _ from "lodash";
 import { ref } from "vue";
+import { useRoute } from "vue-router";
+import { easyGameConfig, middleGameConfig, hardGameConfig, lunaticGameConfig, skyGameConfig, yangGameConfig } from "./gameConfig";
 
 const useGame = () => {
-  const { gameConfig } = useGlobalStore();
+  const { gameConfig, setGameConfig } = useGlobalStore();
+  const route = useRoute();
+
+  // 关卡配置
+  const levels = [
+    { id: 1, name: '新手村', difficulty: '简单', config: easyGameConfig },
+    { id: 2, name: '小鱼儿', difficulty: '中等', config: middleGameConfig },
+    { id: 3, name: '大鲨鱼', difficulty: '困难', config: hardGameConfig },
+    { id: 4, name: '海洋霸主', difficulty: '地狱', config: lunaticGameConfig },
+    { id: 5, name: '深渊挑战', difficulty: '天狱', config: skyGameConfig },
+    { id: 6, name: '终极考验', difficulty: '羊了个羊', config: yangGameConfig },
+  ];
+
+  // 从URL参数获取关卡号
+  const getLevelFromUrl = (): number => {
+    const levelParam = route.query.level;
+    if (levelParam) {
+      const levelId = parseInt(levelParam as string);
+      if (!isNaN(levelId) && levelId >= 1 && levelId <= 6) {
+        return levelId;
+      }
+    }
+    // 默认返回第一关
+    return 1;
+  };
+
+  // 加载指定关卡的配置
+  const loadLevelConfig = (levelId: number) => {
+    const level = levels.find(l => l.id === levelId);
+    if (level) {
+      setGameConfig(level.config);
+      localStorage.setItem('currentLevel', JSON.stringify(levelId));
+    }
+  };
 
   // 游戏状态：0 - 初始化, 1 - 进行中, 2 - 失败结束, 3 - 胜利
   const gameStatus = ref(0);
@@ -79,6 +114,10 @@ const useGame = () => {
    * 游戏初始化
    */
   const initGame = () => {
+    // 从URL参数加载关卡配置
+    const levelId = getLevelFromUrl();
+    loadLevelConfig(levelId);
+
     console.log("initGame", gameConfig);
 
     // 0. 设置父容器宽高
@@ -364,6 +403,8 @@ const useGame = () => {
     }
     if (clearBlockNum.value >= totalBlockNum.value) {
       gameStatus.value = 3;
+      // 更新关卡进度
+      updateLevelProgress();
     }
   };
 
@@ -485,6 +526,59 @@ const useGame = () => {
   };
 
   // endregion
+
+  /**
+   * 更新关卡进度
+   */
+  const updateLevelProgress = () => {
+    const currentLevel = localStorage.getItem('currentLevel');
+    if (currentLevel) {
+      const levelId = parseInt(currentLevel);
+      // 标记当前关卡为已完成
+      const completedLevels = getCompletedLevels();
+      if (!completedLevels.includes(levelId)) {
+        completedLevels.push(levelId);
+        saveCompletedLevels(completedLevels);
+      }
+      // 解锁下一个关卡
+      const unlockedLevels = getUnlockedLevels();
+      const nextLevel = levelId + 1;
+      if (!unlockedLevels.includes(nextLevel) && nextLevel <= 6) { // 最多6关
+        unlockedLevels.push(nextLevel);
+        saveUnlockedLevels(unlockedLevels);
+      }
+    }
+  };
+
+  /**
+   * 从缓存获取已解锁的关卡
+   */
+  const getUnlockedLevels = (): number[] => {
+    const saved = localStorage.getItem('unlockedLevels');
+    return saved ? JSON.parse(saved) : [1]; // 默认解锁第一关
+  };
+
+  /**
+   * 从缓存获取已完成的关卡
+   */
+  const getCompletedLevels = (): number[] => {
+    const saved = localStorage.getItem('completedLevels');
+    return saved ? JSON.parse(saved) : [];
+  };
+
+  /**
+   * 保存已解锁的关卡到缓存
+   */
+  const saveUnlockedLevels = (levels: number[]) => {
+    localStorage.setItem('unlockedLevels', JSON.stringify(levels));
+  };
+
+  /**
+   * 保存已完成的关卡到缓存
+   */
+  const saveCompletedLevels = (levels: number[]) => {
+    localStorage.setItem('completedLevels', JSON.stringify(levels));
+  };
 
   return {
     gameStatus,
