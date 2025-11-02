@@ -1,55 +1,74 @@
 <template>
   <div id="indexPage">
-    <h1>🐟 鱼了个鱼</h1>
-    <div style="margin-bottom: 16px">低配版羊了个羊小游戏，仅供消遣</div>
-    <a-button
-      block
-      style="margin-bottom: 16px"
-      @click="toGamePage(easyGameConfig)"
-    >
-      简单模式
-    </a-button>
-    <a-button
-      block
-      style="margin-bottom: 16px"
-      @click="toGamePage(middleGameConfig)"
-    >
-      中等模式
-    </a-button>
-    <a-button
-      block
-      style="margin-bottom: 16px"
-      @click="toGamePage(hardGameConfig)"
-    >
-      困难模式
-    </a-button>
-    <a-button
-      block
-      style="margin-bottom: 16px"
-      @click="toGamePage(lunaticGameConfig)"
-    >
-      地狱模式
-    </a-button>
-    <a-button
-      block
-      style="margin-bottom: 16px"
-      @click="toGamePage(skyGameConfig)"
-    >
-      天狱模式
-    </a-button>
-    <a-button
-      block
-      style="margin-bottom: 16px"
-      @click="toGamePage(yangGameConfig)"
-    >
-      羊了个羊模式
-    </a-button>
-    <a-button block style="margin-bottom: 16px" @click="() => toGamePage()">
-      自定义 🔥
-    </a-button>
+    <h1>🐟 游戏集合</h1>
+    <div style="margin-bottom: 16px">包含鱼了个鱼和跳一跳小游戏，仅供消遣</div>
+    
+    <!-- 鱼了个鱼游戏入口 -->
+    <div class="game-section">
+      <h2>🐟 鱼了个鱼</h2>
+      <a-button
+        block
+        style="margin-bottom: 16px"
+        @click="toGamePage(easyGameConfig)"
+      >
+        简单模式
+      </a-button>
+      <a-button
+        block
+        style="margin-bottom: 16px"
+        @click="toGamePage(middleGameConfig)"
+      >
+        中等模式
+      </a-button>
+      <a-button
+        block
+        style="margin-bottom: 16px"
+        @click="toGamePage(hardGameConfig)"
+      >
+        困难模式
+      </a-button>
+      <a-button
+        block
+        style="margin-bottom: 16px"
+        @click="toGamePage(lunaticGameConfig)"
+      >
+        地狱模式
+      </a-button>
+      <a-button
+        block
+        style="margin-bottom: 16px"
+        @click="toGamePage(skyGameConfig)"
+      >
+        天狱模式
+      </a-button>
+      <a-button
+        block
+        style="margin-bottom: 16px"
+        @click="toGamePage(yangGameConfig)"
+      >
+        羊了个羊模式
+      </a-button>
+      <a-button block style="margin-bottom: 16px" @click="() => toGamePage()">
+        自定义 🔥
+      </a-button>
+    </div>
+    
+    <!-- 跳一跳游戏入口 -->
+    <div class="game-section">
+      <h2>🎮 跳一跳</h2>
+      <a-button
+        block
+        type="primary"
+        style="margin-bottom: 16px"
+        @click="toJumpGamePage()"
+      >
+        开始游戏
+      </a-button>
+    </div>
+    
     <my-ad />
     <div class="footer">
-      鱼了个鱼 ©2022 by
+      游戏集合 ©2022 by
       <a href="https://github.com/liyupi" target="_blank" style="color: #fff">
         程序员鱼皮
       </a>
@@ -90,11 +109,32 @@ const toGamePage = (config?: GameConfigType) => {
     router.push("/config");
   }
 };
+
+const toJumpGamePage = () => {
+  router.push("/jump-game");
+};
 </script>
 
 <style scoped>
 #indexPage {
   text-align: center;
+}
+
+.game-section {
+  margin-bottom: 40px;
+  padding: 20px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  display: inline-block;
+  width: 100%;
+  max-width: 400px;
+}
+
+.game-section h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #2196f3;
 }
 
 .footer {
