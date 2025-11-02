@@ -2,6 +2,7 @@ import { RouteRecordRaw } from "vue-router";
 import IndexPage from "../pages/IndexPage.vue";
 import GamePage from "../pages/GamePage.vue";
 import ConfigPage from "../pages/ConfigPage.vue";
+import JumpGamePage from "../pages/JumpGamePage.vue";
 
 export default [
   {
@@ -15,5 +16,9 @@ export default [
   {
     path: "/config",
     component: ConfigPage,
+  },
+  {
+    path: "/jump-game",
+    component: JumpGamePage,
   },
 ] as RouteRecordRaw[];
