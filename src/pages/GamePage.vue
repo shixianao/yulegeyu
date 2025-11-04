@@ -55,13 +55,13 @@
         class="random-area"
       >
         <div
-          v-if="randomBlock.length > 0"
-          :data-id="randomBlock[0].id"
-          class="block"
-          @click="() => doClickBlock(randomBlock[0], index)"
-        >
-          {{ randomBlock[0].type }}
-        </div>
+            v-if="randomBlock.length > 0"
+            :data-id="randomBlock[0].id"
+            class="block"
+            @click="() => doClickBlock(randomBlock[0], index)"
+          >
+            {{ randomBlock[0].type }}
+          </div>
         <!-- 隐藏 -->
         <div
           v-for="num in Math.max(randomBlock.length - 1, 0)"
@@ -76,7 +76,7 @@
     </a-row>
     <!-- 槽位 -->
     <a-row v-if="slotAreaVal.length > 0" align="center" class="slot-board">
-      <div v-for="(slotBlock, index) in slotAreaVal" :key="index" class="block">
+      <div v-for="(slotBlock, index) in slotAreaVal" :key="index" class="block" :data-id="slotBlock?.id">
         {{ slotBlock?.type }}
       </div>
     </a-row>
@@ -173,10 +173,18 @@ onMounted(() => {
 <style scoped>
 .level-board {
   position: relative;
+  perspective: 1000px;
 }
 
 .level-block {
   position: absolute;
+  transition: all 0.3s ease;
+  transform-style: preserve-3d;
+}
+
+.level-block:hover:not(.disabled) {
+  transform: translateY(-5px) rotateX(5deg) rotateY(5deg);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 .random-board {
@@ -207,10 +215,48 @@ onMounted(() => {
   text-align: center;
   vertical-align: top;
   display: inline-block;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: all 0.3s ease;
+}
+
+.block::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  transform: rotateY(180deg);
+  backface-visibility: hidden;
+  border-radius: 4px;
 }
 
 .disabled {
   background: grey;
   cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* 火焰消除动画 */
+@keyframes burn {
+  0% {
+    transform: scale(1) rotateX(0deg) rotateY(0deg);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.2) rotateX(180deg) rotateY(180deg);
+    opacity: 0.8;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
+  }
+  100% {
+    transform: scale(0) rotateX(360deg) rotateY(360deg);
+    opacity: 0;
+  }
+}
+
+.burn-animation {
+  animation: burn 0.5s ease-out forwards;
 }
 </style>

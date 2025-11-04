@@ -388,6 +388,11 @@ const useGame = () => {
         clearBlockNum.value++;
         // 清除操作记录，防止撤回
         opHistory = [];
+        // 添加火焰消除动画
+        const blockDom = document.querySelector(`.block[data-id="${slotBlock.id}"]`);
+        if (blockDom) {
+          blockDom.classList.add('burn-animation');
+        }
         return;
       }
       newSlotAreaVal[tempSlotNum++] = slotBlock;
